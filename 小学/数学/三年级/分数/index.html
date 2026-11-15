@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三年级数学：分数直观演示小工具</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --stage: #f2f4f8;
+      --accent-bg: #e3f0ff;
+      --primary: #2575fc;
+      --primary-hover: #1a64e0;
+      --text: #111827;
+      --muted: #5f6368;
+      --outline: #6b7280;
+      --track: #dbe2ea;
+      --shadow: 0 4px 20px rgba(17, 24, 39, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .app-header {
+      margin-bottom: 18px;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .app-subtitle {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .readout-card {
+      background: var(--accent-bg);
+      border-radius: 16px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .frac-display {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      min-width: 52px;
+    }
+
+    .frac-line {
+      width: 100%;
+      height: 2.5px;
+      background: var(--text);
+      margin: 5px 0;
+      border-radius: 2px;
+    }
+
+    .readout-text {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .readout-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .readout-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .stage-card {
+      background: var(--stage);
+      border-radius: 16px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+    }
+
+    .stage-caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .control-deck {
+      background: var(--stage);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .slider-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      min-width: 160px;
+    }
+
+    .slider-container {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="range"].frac-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--primary) 0%,
+        var(--primary) var(--progress, 50%),
+        var(--track) var(--progress, 50%),
+        var(--track) 100%
+      );
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].frac-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 117, 252, 0.35);
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    input[type="range"].frac-slider::-webkit-slider-thumb:hover {
+      background: var(--primary-hover);
+      transform: scale(1.08);
+    }
+
+    input[type="range"].frac-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 117, 252, 0.35);
+      cursor: pointer;
+    }
+
+    .slider-value {
+      min-width: 60px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    svg path, svg rect {
+      transition: fill 0.15s ease;
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        padding: 18px 14px;
+      }
+      .readout-card {
+        padding: 14px 16px;
+        gap: 14px;
+      }
+      .slider-label {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1 class="app-title">分数的初步认识 · 互动小实验</h1>
+      <p class="app-subtitle">拖动分母和分子滑块，观察“平均分”和“涂色份数”的变化</p>
+    </header>
+
+    <section class="readout-card" aria-live="polite">
+      <div class="frac-display">
+        <span id="disp-num">3</span>
+        <span class="frac-line"></span>
+        <span id="disp-den">4</span>
+      </div>
+      <div class="readout-text">
+        <div id="disp-read" class="readout-title">读作：四分之三</div>
+        <div id="disp-meaning" class="readout-desc">把一个整体平均分成 4 份，取其中的 3 份</div>
+      </div>
+    </section>
+
+    <section class="viz-grid">
+      <div class="stage-card">
+        <svg id="pie-svg" viewBox="0 0 180 180" width="164" height="164" aria-label="圆形分数图"></svg>
+        <div class="stage-caption">圆形模型（分蛋糕）</div>
+      </div>
+      <div class="stage-card">
+        <svg id="bar-svg" viewBox="0 0 260 120" width="244" height="112" aria-label="长条分数图"></svg>
+        <div class="stage-caption">长条模型（分纸条）</div>
+      </div>
+    </section>
+
+    <section class="control-deck" aria-label="分数调节控制区">
+      <div class="slider-row">
+        <label class="slider-label" for="in-den">分母（平均分成几份）</label>
+        <div class="slider-container">
+          <input id="in-den" class="frac-slider" type="range" min="2" max="8" step="1" value="4" style="--progress: 33.33%;">
+          <div id="val-den" class="slider-value">4 份</div>
+        </div>
+      </div>
+      <div class="slider-row">
+        <label class="slider-label" for="in-num">分子（涂色取几份）</label>
+        <div class="slider-container">
+          <input id="in-num" class="frac-slider" type="range" min="1" max="4" step="1" value="3" style="--progress: 66.67%;">
+          <div id="val-num" class="slider-value">3 份</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CN_NUMS = ['', '一', '二', '三', '四', '五', '六', '七', '八'];
+    const inDen = document.getElementById('in-den');
+    const inNum = document.getElementById('in-num');
+    const valDen = document.getElementById('val-den');
+    const valNum = document.getElementById('val-num');
+    const dispNum = document.getElementById('disp-num');
+    const dispDen = document.getElementById('disp-den');
+    const dispRead = document.getElementById('disp-read');
+    const dispMeaning = document.getElementById('disp-meaning');
+    const pieSvg = document.getElementById('pie-svg');
+    const barSvg = document.getElementById('bar-svg');
+
+    function syncProgress(slider) {
+      const min = parseFloat(slider.min);
+      const max = parseFloat(slider.max);
+      const val = parseFloat(slider.value);
+      const pct = max > min ? ((val - min) / (max - min)) * 100 : 100;
+      slider.style.setProperty('--progress', pct.toFixed(2) + '%');
+    }
+
+    function render() {
+      const den = parseInt(inDen.value, 10);
+      if (parseInt(inNum.value, 10) > den) {
+        inNum.value = String(den);
+      }
+      inNum.max = String(den);
+      const num = parseInt(inNum.value, 10);
+
+      syncProgress(inDen);
+      syncProgress(inNum);
+      valDen.textContent = den + ' 份';
+      valNum.textContent = num + ' 份';
+      dispNum.textContent = String(num);
+      dispDen.textContent = String(den);
+      dispRead.textContent = '读作：' + CN_NUMS[den] + '分之' + CN_NUMS[num];
+      dispMeaning.textContent = '把一个整体平均分成 ' + den + ' 份，取其中的 ' + num + ' 份';
+
+      const cx = 90, cy = 90, r = 74;
+      let pieHtml = '';
+      for (let i = 0; i < den; i++) {
+        const a1 = (-Math.PI / 2) + (i * 2 * Math.PI) / den;
+        const a2 = (-Math.PI / 2) + ((i + 1) * 2 * Math.PI) / den;
+        const x1 = cx + r * Math.cos(a1);
+        const y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2);
+        const y2 = cy + r * Math.sin(a2);
+        const largeArc = (a2 - a1) > Math.PI ? 1 : 0;
+        const fill = i < num ? '#2575fc' : '#ffffff';
+        const d = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+        pieHtml += `<path d="${d}" fill="${fill}" stroke="#6b7280" stroke-width="1.5"/>`;
+      }
+      pieSvg.innerHTML = pieHtml;
+
+      const bx = 14, by = 34, bw = 232, bh = 52;
+      const segW = bw / den;
+      let barHtml = '';
+      for (let i = 0; i < den; i++) {
+        const x = bx + i * segW;
+        const fill = i < num ? '#2575fc' : '#ffffff';
+        barHtml += `<rect x="${x.toFixed(2)}" y="${by}" width="${segW.toFixed(2)}" height="${bh}" fill="${fill}" stroke="#6b7280" stroke-width="1.5"/>`;
+      }
+      barSvg.innerHTML = barHtml;
+    }
+
+    inDen.addEventListener('input', render);
+    inNum.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>
