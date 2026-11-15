@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三年级数学：三位数乘20以内两位数竖式练习</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --stage: #f2f4f8;
+      --accent-bg: #e3f0ff;
+      --primary: #2575fc;
+      --primary-hover: #1a64e0;
+      --ok: #15803d;
+      --ok-bg: #dcfce7;
+      --err: #dc2626;
+      --err-bg: #fee2e2;
+      --text: #111827;
+      --muted: #5f6368;
+      --border: #cbd5e1;
+      --shadow: 0 4px 20px rgba(17, 24, 39, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .app-subtitle {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stats-pill {
+      display: inline-flex;
+      gap: 12px;
+      background: var(--stage);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stats-pill span strong {
+      color: var(--primary);
+    }
+
+    .custom-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--stage);
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .custom-bar input[type="number"] {
+      width: 76px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 8px;
+      font-size: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-align: center;
+      background: #fff;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-tonal {
+      background: var(--accent-bg);
+      color: var(--primary);
+    }
+
+    .btn-tonal:hover {
+      background: #d0e5ff;
+    }
+
+    .btn-ghost {
+      background: var(--stage);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 8px;
+    }
+
+    .board {
+      background: var(--stage);
+      border-radius: 16px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    .equation-banner {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+
+    .grid-wrap {
+      display: inline-grid;
+      grid-template-columns: 36px repeat(5, 44px);
+      gap: 6px 6px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .place-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .digit-cell {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .op-cell {
+      width: 36px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .rule-line {
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 2.5px;
+      background: var(--text);
+      border-radius: 2px;
+      margin: 2px 0;
+    }
+
+    .digit-input {
+      width: 42px;
+      height: 44px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      text-align: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .digit-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.18);
+    }
+
+    .digit-input.is-ok {
+      border-color: var(--ok);
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .digit-input.is-err {
+      border-color: var(--err);
+      background: var(--err-bg);
+      color: var(--err);
+    }
+
+    .ghost-zero {
+      width: 42px;
+      height: 44px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 16px;
+      color: #94a3b8;
+      user-select: none;
+    }
+
+    .hint-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .feedback {
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .feedback.is-visible {
+      display: block;
+    }
+
+    .feedback.is-ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .feedback.is-err {
+      background: var(--err-bg);
+      color: var(--err);
+    }
+
+    .feedback.is-info {
+      background: var(--accent-bg);
+      color: var(--text);
+    }
+
+    .steps-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        padding: 16px 12px;
+      }
+      .grid-wrap {
+        grid-template-columns: 28px repeat(5, 38px);
+        gap: 4px;
+      }
+      .digit-cell, .digit-input, .ghost-zero {
+        width: 38px;
+        height: 40px;
+        font-size: 19px;
+      }
+      .op-cell {
+        width: 28px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top-bar">
+      <div>
+        <h1 class="app-title">三位数 × 20以内两位数 竖式练习</h1>
+        <p class="app-subtitle">按竖式习惯从右往左填数字（个位 → 高位），系统自动左移光标</p>
+      </div>
+      <div class="stats-pill" aria-live="polite">
+        <span>已练 <strong id="stat-total">0</strong></span>
+        <span>全对 <strong id="stat-ok">0</strong></span>
+        <span>连对 <strong id="stat-streak">0</strong></span>
+      </div>
+    </header>
+
+    <section class="custom-bar" aria-label="自定义题目">
+      <span>自定义出题：</span>
+      <input id="custom-a" type="number" min="100" max="999" value="234" aria-label="三位数">
+      <span>×</span>
+      <input id="custom-b" type="number" min="10" max="19" value="13" aria-label="20以内两位数">
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-apply">出这道题</button>
+      <button type="button" class="btn btn-tonal btn-sm" id="btn-random">随机换一题</button>
+    </section>
+
+    <section class="board">
+      <div class="equation-banner" id="eq-banner">234 × 13 = ?</div>
+      <div class="grid-wrap" id="vertical-grid"></div>
+      <div class="hint-note">提示：第二层用十位上的 1 去乘时，积的末位要和十位对齐</div>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="btn-check">检查答案</button>
+      <button type="button" class="btn btn-tonal" id="btn-explain">看分步讲解</button>
+      <button type="button" class="btn btn-ghost" id="btn-clear">清空重填</button>
+      <button type="button" class="btn btn-ghost" id="btn-next">下一题</button>
+    </div>
+
+    <section class="feedback" id="feedback" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const PLACES = ['万', '千', '百', '十', '个'];
+    let state = {
+      a: 234,
+      b: 13,
+      total: 0,
+      ok: 0,
+      streak: 0,
+      solvedCurrent: false
+    };
+
+    const gridEl = document.getElementById('vertical-grid');
+    const eqBanner = document.getElementById('eq-banner');
+    const feedbackEl = document.getElementById('feedback');
+    const customA = document.getElementById('custom-a');
+    const customB = document.getElementById('custom-b');
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function digitsAligned(num, rightShift = 0) {
+      const arr = ['', '', '', '', ''];
+      const str = String(num);
+      for (let i = 0; i < str.length; i++) {
+        const col = 4 - rightShift - (str.length - 1 - i);
+        if (col >= 0 && col <= 4) {
+          arr[col] = str[i];
+        }
+      }
+      return arr;
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = String(state.total);
+      document.getElementById('stat-ok').textContent = String(state.ok);
+      document.getElementById('stat-streak').textContent = String(state.streak);
+    }
+
+    function hideFeedback() {
+      feedbackEl.className = 'feedback';
+      feedbackEl.innerHTML = '';
+    }
+
+    function showFeedback(type, html) {
+      feedbackEl.className = 'feedback is-visible ' + type;
+      feedbackEl.innerHTML = html;
+    }
+
+    function renderGrid() {
+      const a = state.a;
+      const b = state.b;
+      const ones = b % 10;
+      const p1 = a * ones;
+      const p2 = a * 1;
+      const total = a * b;
+
+      eqBanner.textContent = `${a} × ${b} = ?`;
+      customA.value = String(a);
+      customB.value = String(b);
+      state.solvedCurrent = false;
+      hideFeedback();
+
+      const aCols = digitsAligned(a, 0);
+      const bCols = digitsAligned(b, 0);
+      const p1Cols = digitsAligned(p1, 0);
+      const p2Cols = digitsAligned(p2, 1);
+      const totCols = digitsAligned(total, 0);
+
+      let html = '<div></div>';
+      for (let c = 0; c < 5; c++) {
+        html += `<div class="place-label">${PLACES[c]}</div>`;
+      }
+
+      html += '<div class="op-cell"></div>';
+      for (let c = 0; c < 5; c++) {
+        html += `<div class="digit-cell">${aCols[c]}</div>`;
+      }
+
+      html += '<div class="op-cell">×</div>';
+      for (let c = 0; c < 5; c++) {
+        html += `<div class="digit-cell">${bCols[c]}</div>`;
+      }
+
+      html += '<div class="rule-line"></div>';
+
+      // Row: partial product 1 (a * ones)
+      html += '<div class="op-cell"></div>';
+      for (let c = 0; c < 5; c++) {
+        if (p1Cols[c] !== '') {
+          html += `<input class="digit-input" type="text" inputmode="numeric" maxlength="1" data-row="p1" data-col="${c}" data-expected="${p1Cols[c]}" aria-label="第一层${PLACES[c]}位">`;
+        } else {
+          html += '<div></div>';
+        }
+      }
+
+      // Row: partial product 2 (a * tens digit 1, shifted left 1)
+      html += '<div class="op-cell">+</div>';
+      for (let c = 0; c < 5; c++) {
+        if (c === 4) {
+          html += '<div class="ghost-zero" title="十位乘积末位对准十位，个位空出"></div>';
+        } else if (p2Cols[c] !== '') {
+          html += `<input class="digit-input" type="text" inputmode="numeric" maxlength="1" data-row="p2" data-col="${c}" data-expected="${p2Cols[c]}" aria-label="第二层${PLACES[c]}位">`;
+        } else {
+          html += '<div></div>';
+        }
+      }
+
+      html += '<div class="rule-line"></div>';
+
+      // Row: final product
+      html += '<div class="op-cell"></div>';
+      for (let c = 0; c < 5; c++) {
+        if (totCols[c] !== '') {
+          html += `<input class="digit-input" type="text" inputmode="numeric" maxlength="1" data-row="tot" data-col="${c}" data-expected="${totCols[c]}" aria-label="最终结果${PLACES[c]}位">`;
+        } else {
+          html += '<div></div>';
+        }
+      }
+
+      gridEl.innerHTML = html;
+      attachInputHandlers();
+
+      const firstInput = gridEl.querySelector('input[data-row="p1"][data-col="4"]') || gridEl.querySelector('.digit-input');
+      if (firstInput) firstInput.focus();
+    }
+
+    function attachInputHandlers() {
+      const inputs = Array.from(gridEl.querySelectorAll('.digit-input'));
+      inputs.forEach(inp => {
+        inp.addEventListener('input', e => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val.slice(-1);
+          e.target.classList.remove('is-ok', 'is-err');
+
+          if (e.target.value !== '') {
+            // Move right-to-left within the same row, then jump to next row's rightmost input
+            const row = e.target.dataset.row;
+            const col = parseInt(e.target.dataset.col, 10);
+            const sameRowLeft = inputs.find(x => x.dataset.row === row && parseInt(x.dataset.col, 10) === col - 1);
+            if (sameRowLeft) {
+              sameRowLeft.focus();
+            } else {
+              const rowOrder = ['p1', 'p2', 'tot'];
+              const nextRow = rowOrder[rowOrder.indexOf(row) + 1];
+              if (nextRow) {
+                const nextRowInputs = inputs.filter(x => x.dataset.row === nextRow);
+                if (nextRowInputs.length > 0) {
+                  nextRowInputs[nextRowInputs.length - 1].focus();
+                }
+              }
+            }
+          }
+        });
+
+        inp.addEventListener('keydown', e => {
+          const row = e.target.dataset.row;
+          const col = parseInt(e.target.dataset.col, 10);
+          if (e.key === 'ArrowLeft') {
+            const target = inputs.find(x => x.dataset.row === row && parseInt(x.dataset.col, 10) === col - 1);
+            if (target) { e.preventDefault(); target.focus(); }
+          } else if (e.key === 'ArrowRight') {
+            const target = inputs.find(x => x.dataset.row === row && parseInt(x.dataset.col, 10) === col + 1);
+            if (target) { e.preventDefault(); target.focus(); }
+          } else if (e.key === 'Enter') {
+            checkAnswer();
+          }
+        });
+      });
+    }
+
+    function checkAnswer() {
+      const inputs = Array.from(gridEl.querySelectorAll('.digit-input'));
+      let allFilled = true;
+      let allCorrect = true;
+
+      inputs.forEach(inp => {
+        const val = inp.value.trim();
+        const exp = inp.dataset.expected;
+        inp.classList.remove('is-ok', 'is-err');
+        if (val === '') {
+          allFilled = false;
+          allCorrect = false;
+          inp.classList.add('is-err');
+        } else if (val === exp) {
+          inp.classList.add('is-ok');
+        } else {
+          allCorrect = false;
+          inp.classList.add('is-err');
+        }
+      });
+
+      if (!state.solvedCurrent) {
+        state.total += 1;
+        if (allCorrect) {
+          state.ok += 1;
+          state.streak += 1;
+          state.solvedCurrent = true;
+        } else {
+          state.streak = 0;
+        }
+        updateStats();
+      }
+
+      if (allCorrect) {
+        eqBanner.textContent = `${state.a} × ${state.b} = ${state.a * state.b}`;
+        showFeedback('is-ok', `<strong>完全正确！</strong> ${state.a} × ${state.b} = ${state.a * state.b}，竖式对齐和进位都很稳。`);
+      } else if (!allFilled) {
+        showFeedback('is-err', '还有空格没填完，红色框位置请再检查一下。');
+      } else {
+        showFeedback('is-err', '部分数字不对哦，标红的数位再重新算一算，或者点“看分步讲解”。');
+      }
+    }
+
+    function explainSteps() {
+      const a = state.a;
+      const b = state.b;
+      const ones = b % 10;
+      const p1 = a * ones;
+      const p2 = a * 10;
+      const total = a * b;
+      showFeedback('is-info', `
+        <strong>分步计算方法：</strong>
+        <ol class="steps-list">
+          <li><strong>先算个位：</strong>${a} × ${ones} = ${p1}，末位和<strong>个位</strong>对齐。</li>
+          <li><strong>再算十位：</strong>${a} × 10 = ${p2}（用十位上的 1 乘 ${a} 得 ${a}，末位和<strong>十位</strong>对齐）。</li>
+          <li><strong>最后相加：</strong>${p1} + ${p2} = <strong>${total}</strong>。</li>
+        </ol>
+      `);
+    }
+
+    function newRandom() {
+      state.a = randInt(100, 999);
+      state.b = randInt(11, 19);
+      renderGrid();
+    }
+
+    document.getElementById('btn-check').addEventListener('click', checkAnswer);
+    document.getElementById('btn-explain').addEventListener('click', explainSteps);
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      gridEl.querySelectorAll('.digit-input').forEach(inp => {
+        inp.value = '';
+        inp.classList.remove('is-ok', 'is-err');
+      });
+      hideFeedback();
+      const first = gridEl.querySelector('input[data-row="p1"][data-col="4"]');
+      if (first) first.focus();
+    });
+    document.getElementById('btn-next').addEventListener('click', newRandom);
+    document.getElementById('btn-random').addEventListener('click', newRandom);
+    document.getElementById('btn-apply').addEventListener('click', () => {
+      const aVal = parseInt(customA.value, 10);
+      const bVal = parseInt(customB.value, 10);
+      if (isNaN(aVal) || aVal < 100 || aVal > 999 || isNaN(bVal) || bVal < 10 || bVal > 19) {
+        showFeedback('is-err', '请输入 100~999 的三位数，以及 10~19 的两位数。');
+        return;
+      }
+      state.a = aVal;
+      state.b = bVal;
+      renderGrid();
+    });
+
+    newRandom();
+  </script>
+</body>
+</html>
